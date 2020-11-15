@@ -1,4 +1,5 @@
 pymongo
-sqlalchemy
+SQLAalchemy
+psycopg2-binary
 textblob
 vaderSentiment

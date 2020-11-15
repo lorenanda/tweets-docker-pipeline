@@ -2,11 +2,9 @@ from tweepy import OAuthHandler, Stream
 from tweepy.streaming import StreamListener
 import json
 import logging
-from sqlalchemy import create_engine
 import pymongo
 import config
 
-engine = config.PG_ENGINE
 
 # Function for Twitter authentication
 def authenticate():
@@ -33,9 +31,6 @@ class TwitterListener(StreamListener):
         #
         logging.warning(f'\n\n\nTWEET! {tweet["username"]} just tweeted: "{tweet["text"]}"\n\n\n')
         
-        # Insert the tweets into the mongo db
-        db.tweets_db.insert_many(tweet)
-        
 
     # Return an error if twitter is unreachable
     def on_error(self, status):
@@ -48,9 +43,10 @@ class TwitterListener(StreamListener):
 if __name__ == '__main__':
     client = pymongo.MongoClient(host='mongo_container', port=27018)
     db = client.tweets_db
-    #collection = db.tweets
-    #collection.insert_many(tweet["text"])    
+    collection = db.tweets
+    collection.insert_many(tweet) 
     
+    #db.tweets_db.insert_many(tweet)   
     
     auth = authenticate()
     listener = TwitterListener()

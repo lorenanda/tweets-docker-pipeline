@@ -4,40 +4,45 @@ from sqlalchemy import create_engine
 import time
 from vaderSentiment.vaderSentiment import SentimentIntensityAnalyzer
 from textblob import TextBlob
-
 import config
 import tweet_streamer
 
 time.sleep(5)
 
 # connect to Postgres
-engine = create_engine('postgres://postgres:xxxx@postgres_container:5432/postgres')
+engine = config.PG_ENGINE
+
+create_query = """
+CREATE TABLE IF NOT EXISTS tweets (
+user VARCHAR,
+text VARCHAR,
+sia_score NUMERIC,
+blob_score NUMERIC
+);
+"""
+engine.execute(create_query)
 
 # connect to MongoDB 
-client = pymongo.MongoClient(host='mongodb', port=27018)
+client = config.LOCAL_CLIENT
 db = client.tweets_db
 
 # Extract tweets from MongoDB
-tweetsList = db.find()
-for item in tweetsList:
+find_tweets  = db.tweets_collection.find({})
+for tweet in find_tweets:
+    #clean text
+    tweet_text = tweet['text'].replace("\'","")
 
-## Transform the data
-# clean text
-text = re.sub('(RE:@[\w_]+)', "", text)
+    #sentiment analysis
+    sia = SentimentIntensityAnalyzer()
+    tweet_sia = sia.polarity_scores(tweet_text)['compound']
+    tweet_blob = TextBlob(tweet_text).sentiment
 
-# sentiment analysis
-sia = SentimentIntensityAnalyzer()
-for tweet in tweets:
-    tweet_sentiment = sia.polarity_scores(tweet)
-    for score in tweet_sentiment:
-        print('{0}: {1}, '.format(score, tweet_sentiment[score]), end='')
+    # Print out the extracted tweet
+    logging.critical(f'Tweet extracted: {tweet_text}')
 
-
-## Load the data into Postgres
-create_query = """
-CREATE TABLE IF NOT EXISTS tweets (
-text VARCHAR(280)
-);
-"""
-insert_query = f"INSERT INTO tweets VALUES (text) VALUES ('{tweet['text']}', '');"
-engine.execute(insert_query) 
+    ## Load the data into Postgres
+    insert_query = """
+    INSERT INTO tweets (text, sia_score, blob_score)
+    VALUES ('{tweet_text}, {tweet_sia}, {tweet_blob});
+    """
+    engine.execute(insert_query)

@@ -15,8 +15,8 @@ services: #containers
     ports:
       - 5555:5432
     environment:
-      - POSTGRES_USER=postgres
-      - POSTGRES_PASSWORD=xxxx
+      - POSTGRES_USER=your_user
+      - POSTGRES_PASSWORD=your_password
 
   mongo_container:
     build: mongodb
@@ -34,5 +34,10 @@ services: #containers
     volumes:
       - ./etl_job/:/app
 
-
-  #slackbot_container:
+  slackbot_container:
+    build: slackbot/
+    depends_on:
+      - mongo_container
+      - postgres_container
+    volumes:
+      - ./slackbot/:/app
