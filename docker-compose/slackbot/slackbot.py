@@ -1,20 +1,21 @@
-import sqlalchemy 
+import time 
+import slack
 from sqlalchemy import create_engine
 import config
-import requests
+
+#client = slack.WebClient(token=)
 
 engine = config.PG_ENGINE
 webhook_url = config.WEBHOOK_SLACK
 
-result = engine.execute("SELECT * FROM tweets;")
 
-for row in result:
-    output = f'NEW TWEET! {user} just tweeted: {text} \nSentiment score: {blob_score}'
+while True:
+    logging.critical("\n\nPositive tweet:\n")
+    query = pg.execute("SELECT text FROM tweets ORDER BY sentiment DESC LIMIT 1")
+    msg = str(list(query))
+    logging.critical(msg + "\n")
+    output = f'NEW TWEET! {user} just tweeted: {msg} \nSentiment score: {blob_score}'
     data = {'text':output}
     requests.post(url=webhook_url, json=data)
 
-## TESTING
-#example = ("TWEET! anne_obrien just tweeted: #OnThisDay in 1789 Benjamin Franklin writes 'Nothing . . . certain but death & taxes'")
-#tweet_sentiment = TextBlob(example).sentiment
-#tweet_sia = sia.polarity_scores(example)
-#data = {'text': example, 'sentiment_blob':tweet_sentiment, 'sentiment_sia':tweet_sia}
+    time.sleep(30)
