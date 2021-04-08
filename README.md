@@ -1,7 +1,7 @@
 # Tweet streaming pipeline for a Slackbot
 This project was completed in week 7 of the Data Science Bootcamp at Spiced Academy in Berlin.
 
-![pipeline](https://github.com/lorenanda/tweets-docker-pipeline/blob/main/structure.svg)
+![pipeline](https://github.com/lorenanda/tweets-docker-pipeline/blob/main/ETL_pipeline.png)
 
 ## Description
 The goal of this project is to create a database of tweets that use the hashtag #OnThisDay along with their sentiment score, and post a tweet in a Slack channel, to inform members about historical events that happened on that day.
