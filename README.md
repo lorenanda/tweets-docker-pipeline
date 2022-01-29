@@ -14,5 +14,3 @@ The Docker-Compose pipeline includes five steps (containters):
   - Clean the text and apply sentiment analyis with VADER/TextBlob.
 4. Load the cleaned tweet texts and their sentiment scores in a Postgres database.
 5. Create a Slackbot that post a randomly selected tweet from the Postgres database into a Slack channel (`slackbot`)
-
-You can read about the workflow in more detail in [this blog post](https://lorenaciutacu.com/2020-11-14-bootcamp7/).
